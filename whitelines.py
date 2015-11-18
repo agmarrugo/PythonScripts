@@ -11,8 +11,6 @@ Created on Wed Sep 23 08:31:23 2015
 from __future__ import print_function
 import numpy as np
 import argparse
-
-import skimage
 from skimage.io import imread, imsave
 from skimage.color import rgb2gray
 from skimage.filters import threshold_otsu, gaussian_filter
