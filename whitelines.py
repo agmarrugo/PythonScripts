@@ -6,15 +6,16 @@ Created on Wed Sep 23 08:31:23 2015
 
 @author: Andres Marrugo - andresmarrugo.net
 """
+
+# Import the necessary packages
 from __future__ import print_function
 import numpy as np
-from PIL import Image
-import matplotlib.pylab as plt
-from skimage.filters import threshold_otsu
-from skimage.io import imread
-from scipy import ndimage
 import argparse
 
+import skimage
+from skimage.io import imread, imsave
+from skimage.color import rgb2gray
+from skimage.filters import threshold_otsu, gaussian_filter
 
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
@@ -30,15 +31,14 @@ if not(args['output']):
 	args['output'] = args['input'].split('.')[0] + ".pdf"
 
 # Read RGB image
-# im = plt.array(Image.open(args['input']))
 im = imread(args['input'])
 height, width, channels = im.shape
 
-# Read image as grayscale 
-im_gray = plt.array(Image.open(args['input']).convert('L'))
+# Convert image to grayscale
+im_gray = rgb2gray(im)
 
-# The masking works better if we first blur the gray scale image
-im_gray = ndimage.gaussian_filter(im_gray, 3)
+# The masking works better if we first blur the gray scale image (sigma=1.5)
+im_gray = gaussian_filter(im_gray,1.5)
 
 # Compute threshold using Otsu's method
 thresh = threshold_otsu(im_gray)
@@ -54,6 +54,8 @@ rgb_image[mask,0] = im[mask,0]
 rgb_image[mask,1] = im[mask,1]
 rgb_image[mask,2] = im[mask,2]
 
-resultImage = Image.fromarray(rgb_image)
-resultImage.save(args['output'],"PDF",Quality = 100)
+# Save image -- the format is inferred from the output file name. 
+# Default is PDF
+imsave(args['output'],rgb_image)
+
 print('Output saved at',args['output'])
